@@ -1,0 +1,9 @@
+# 机器配置（最大化任务集中与碎片生成）
+machine_count: 3            # 从5→3台，大幅减少节点数量，强制任务高度集中
+cpu_per_machine: 120        # 提高单节点CPU至120核，避免CPU成为集中分配瓶颈
+memory_per_machine: 256000  # 保持548GB大内存，为碎片分割提供充足空间
+disk_per_machine: 232       # 外存保持充足，不限制任务分配
+default_node_status: "enabled"
+disabled_machine_ratio: 0.33 # 禁用1台（3→2台可用），进一步压缩任务分配范围
+cpu_overload_threshold: 98  # 提高CPU过载阈值至98%，允许节点在极高负载下继续接收任务
+resource_overcommit_allowed: false  # 保持关闭超配，避免资源不足导致分配失败

@@ -1,0 +1,409 @@
+# 任务配置（超密集差异化任务集，最大化内存碎片率）
+tasks:
+  # 用户U_001：高频次非标准内存任务，触发多次碎片分割
+  - task_id: "T_001"
+    cpu_demand: 1
+    memory_demand_mb: 2049  # 非2048标准值，避免块对齐
+    disk_demand_gb: 2
+    user_id: "U_001"
+    start_time: "2025-12-10 06:00:00"
+    duration_seconds: 3600
+
+  - task_id: "T_002"
+    cpu_demand: 1
+    memory_demand_mb: 8191  # 接近8GB但不标准
+    disk_demand_gb: 4
+    user_id: "U_001"
+    start_time: "2025-12-10 06:01:00"
+    duration_seconds: 3600
+
+  - task_id: "T_003"
+    cpu_demand: 1
+    memory_demand_mb: 4097  # 4GB+1MB
+    disk_demand_gb: 3
+    user_id: "U_001"
+    start_time: "2025-12-10 06:02:00"
+    duration_seconds: 3600
+
+  - task_id: "T_004"
+    cpu_demand: 1
+    memory_demand_mb: 1023  # 1GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_001"
+    start_time: "2025-12-10 06:03:00"
+    duration_seconds: 3600
+
+  - task_id: "T_005"
+    cpu_demand: 1
+    memory_demand_mb: 16385  # 16GB+1MB
+    disk_demand_gb: 8
+    user_id: "U_001"
+    start_time: "2025-12-10 06:04:00"
+    duration_seconds: 3600
+
+  # 用户U_002：小数GB级任务，强化碎片随机性
+  - task_id: "T_006"
+    cpu_demand: 1
+    memory_demand_mb: 3073  # 3GB+1MB
+    disk_demand_gb: 2
+    user_id: "U_002"
+    start_time: "2025-12-10 06:05:00"
+    duration_seconds: 3600
+
+  - task_id: "T_007"
+    cpu_demand: 1
+    memory_demand_mb: 6143  # 6GB-1MB
+    disk_demand_gb: 3
+    user_id: "U_002"
+    start_time: "2025-12-10 06:06:00"
+    duration_seconds: 3600
+
+  - task_id: "T_008"
+    cpu_demand: 1
+    memory_demand_mb: 5121  # 5GB+1MB
+    disk_demand_gb: 4
+    user_id: "U_002"
+    start_time: "2025-12-10 06:07:00"
+    duration_seconds: 3600
+
+  - task_id: "T_009"
+    cpu_demand: 1
+    memory_demand_mb: 7167  # 7GB-1MB
+    disk_demand_gb: 5
+    user_id: "U_002"
+    start_time: "2025-12-10 06:08:00"
+    duration_seconds: 3600
+
+  - task_id: "T_010"
+    cpu_demand: 1
+    memory_demand_mb: 9217  # 9GB+1MB
+    disk_demand_gb: 6
+    user_id: "U_002"
+    start_time: "2025-12-10 06:09:00"
+    duration_seconds: 3600
+
+  # 用户U_003：亚GB级细分任务，分割微小空闲块
+  - task_id: "T_011"
+    cpu_demand: 1
+    memory_demand_mb: 1537  # 1.5GB+1MB
+    disk_demand_gb: 2
+    user_id: "U_003"
+    start_time: "2025-12-10 06:10:00"
+    duration_seconds: 3600
+
+  - task_id: "T_012"
+    cpu_demand: 1
+    memory_demand_mb: 2559  # 2.5GB-1MB
+    disk_demand_gb: 2
+    user_id: "U_003"
+    start_time: "2025-12-10 06:11:00"
+    duration_seconds: 3600
+
+  - task_id: "T_013"
+    cpu_demand: 1
+    memory_demand_mb: 3585  # 3.5GB+1MB
+    disk_demand_gb: 2
+    user_id: "U_003"
+    start_time: "2025-12-10 06:12:00"
+    duration_seconds: 3600
+
+  - task_id: "T_014"
+    cpu_demand: 1
+    memory_demand_mb: 4607  # 4.5GB-1MB
+    disk_demand_gb: 2
+    user_id: "U_003"
+    start_time: "2025-12-10 06:13:00"
+    duration_seconds: 3600
+
+  - task_id: "T_015"
+    cpu_demand: 1
+    memory_demand_mb: 5633  # 5.5GB+1MB
+    disk_demand_gb: 2
+    user_id: "U_003"
+    start_time: "2025-12-10 06:14:00"
+    duration_seconds: 3600
+
+  # 用户U_004：超小内存任务，填充微小碎片
+  - task_id: "T_016"
+    cpu_demand: 1
+    memory_demand_mb: 897  # 0.875GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_004"
+    start_time: "2025-12-10 06:15:00"
+    duration_seconds: 3600
+
+  - task_id: "T_017"
+    cpu_demand: 1
+    memory_demand_mb: 1791  # 1.75GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_004"
+    start_time: "2025-12-10 06:16:00"
+    duration_seconds: 3600
+
+  - task_id: "T_018"
+    cpu_demand: 1
+    memory_demand_mb: 3841  # 3.75GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_004"
+    start_time: "2025-12-10 06:17:00"
+    duration_seconds: 3600
+
+  - task_id: "T_019"
+    cpu_demand: 1
+    memory_demand_mb: 6911  # 6.75GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_004"
+    start_time: "2025-12-10 06:18:00"
+    duration_seconds: 3600
+
+  - task_id: "T_020"
+    cpu_demand: 1
+    memory_demand_mb: 10241  # 10GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_004"
+    start_time: "2025-12-10 06:19:00"
+    duration_seconds: 3600
+
+  # 新增用户U_005：大跨度内存任务，制造极端碎片
+  - task_id: "T_021"
+    cpu_demand: 1
+    memory_demand_mb: 128  # 极小内存
+    disk_demand_gb: 1
+    user_id: "U_005"
+    start_time: "2025-12-10 06:20:00"
+    duration_seconds: 1800  # 短时长，早释放
+
+  - task_id: "T_022"
+    cpu_demand: 1
+    memory_demand_mb: 32768  # 32GB大内存
+    disk_demand_gb: 10
+    user_id: "U_005"
+    start_time: "2025-12-10 06:21:00"
+    duration_seconds: 7200  # 长时长，晚释放
+
+  - task_id: "T_023"
+    cpu_demand: 1
+    memory_demand_mb: 256  # 极小内存
+    disk_demand_gb: 1
+    user_id: "U_005"
+    start_time: "2025-12-10 06:22:00"
+    duration_seconds: 1800
+
+  - task_id: "T_024"
+    cpu_demand: 1
+    memory_demand_mb: 65535  # 64GB-1MB
+    disk_demand_gb: 20
+    user_id: "U_005"
+    start_time: "2025-12-10 06:23:00"
+    duration_seconds: 7200
+
+  - task_id: "T_025"
+    cpu_demand: 1
+    memory_demand_mb: 512  # 极小内存
+    disk_demand_gb: 1
+    user_id: "U_005"
+    start_time: "2025-12-10 06:24:00"
+    duration_seconds: 1800
+
+  # 新增用户U_006：交错时间任务，强化释放后碎片
+  - task_id: "T_026"
+    cpu_demand: 1
+    memory_demand_mb: 768  # 0.75GB
+    disk_demand_gb: 1
+    user_id: "U_006"
+    start_time: "2025-12-10 06:25:00"
+    duration_seconds: 2400  # 40分钟
+
+  - task_id: "T_027"
+    cpu_demand: 1
+    memory_demand_mb: 12289  # 12GB+1MB
+    disk_demand_gb: 5
+    user_id: "U_006"
+    start_time: "2025-12-10 06:30:00"
+    duration_seconds: 1800  # 30分钟
+
+  - task_id: "T_028"
+    cpu_demand: 1
+    memory_demand_mb: 1025  # 1GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_006"
+    start_time: "2025-12-10 06:35:00"
+    duration_seconds: 2400
+
+  - task_id: "T_029"
+    cpu_demand: 1
+    memory_demand_mb: 24575  # 24GB-1MB
+    disk_demand_gb: 8
+    user_id: "U_006"
+    start_time: "2025-12-10 06:40:00"
+    duration_seconds: 1800
+
+  - task_id: "T_030"
+    cpu_demand: 1
+    memory_demand_mb: 1535  # 1.5GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_006"
+    start_time: "2025-12-10 06:45:00"
+    duration_seconds: 2400
+
+  # 新增用户U_007：高频短任务，反复分割释放
+  - task_id: "T_031"
+    cpu_demand: 1
+    memory_demand_mb: 3071  # 3GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_007"
+    start_time: "2025-12-10 06:50:00"
+    duration_seconds: 600  # 10分钟
+
+  - task_id: "T_032"
+    cpu_demand: 1
+    memory_demand_mb: 3073  # 3GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_007"
+    start_time: "2025-12-10 06:52:00"
+    duration_seconds: 600
+
+  - task_id: "T_033"
+    cpu_demand: 1
+    memory_demand_mb: 3072  # 标准3GB（干扰碎片规则）
+    disk_demand_gb: 1
+    user_id: "U_007"
+    start_time: "2025-12-10 06:54:00"
+    duration_seconds: 600
+
+  - task_id: "T_034"
+    cpu_demand: 1
+    memory_demand_mb: 3071  # 重复3GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_007"
+    start_time: "2025-12-10 06:56:00"
+    duration_seconds: 600
+
+  - task_id: "T_035"
+    cpu_demand: 1
+    memory_demand_mb: 3073  # 重复3GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_007"
+    start_time: "2025-12-10 06:58:00"
+    duration_seconds: 600
+
+  # 最终补充15个极端差异化任务，覆盖更多内存区间
+  - task_id: "T_036"
+    cpu_demand: 1
+    memory_demand_mb: 999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_008"
+    start_time: "2025-12-10 07:00:00"
+    duration_seconds: 3600
+
+  - task_id: "T_037"
+    cpu_demand: 1
+    memory_demand_mb: 10001  # 10GB+1MB
+    disk_demand_gb: 2
+    user_id: "U_008"
+    start_time: "2025-12-10 07:01:00"
+    duration_seconds: 3600
+
+  - task_id: "T_038"
+    cpu_demand: 1
+    memory_demand_mb: 1999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_009"
+    start_time: "2025-12-10 07:02:00"
+    duration_seconds: 3600
+
+  - task_id: "T_039"
+    cpu_demand: 1
+    memory_demand_mb: 20001  # 20GB+1MB
+    disk_demand_gb: 3
+    user_id: "U_009"
+    start_time: "2025-12-10 07:03:00"
+    duration_seconds: 3600
+
+  - task_id: "T_040"
+    cpu_demand: 1
+    memory_demand_mb: 2999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_010"
+    start_time: "2025-12-10 07:04:00"
+    duration_seconds: 3600
+
+  - task_id: "T_041"
+    cpu_demand: 1
+    memory_demand_mb: 30001  # 30GB+1MB
+    disk_demand_gb: 4
+    user_id: "U_010"
+    start_time: "2025-12-10 07:05:00"
+    duration_seconds: 3600
+
+  - task_id: "T_042"
+    cpu_demand: 1
+    memory_demand_mb: 3999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_011"
+    start_time: "2025-12-10 07:06:00"
+    duration_seconds: 3600
+
+  - task_id: "T_043"
+    cpu_demand: 1
+    memory_demand_mb: 40001  # 40GB+1MB
+    disk_demand_gb: 5
+    user_id: "U_011"
+    start_time: "2025-12-10 07:07:00"
+    duration_seconds: 3600
+
+  - task_id: "T_044"
+    cpu_demand: 1
+    memory_demand_mb: 4999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_012"
+    start_time: "2025-12-10 07:08:00"
+    duration_seconds: 3600
+
+  - task_id: "T_045"
+    cpu_demand: 1
+    memory_demand_mb: 50001  # 50GB+1MB
+    disk_demand_gb: 6
+    user_id: "U_012"
+    start_time: "2025-12-10 07:09:00"
+    duration_seconds: 3600
+
+  - task_id: "T_046"
+    cpu_demand: 1
+    memory_demand_mb: 5999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_013"
+    start_time: "2025-12-10 07:10:00"
+    duration_seconds: 3600
+
+  - task_id: "T_047"
+    cpu_demand: 1
+    memory_demand_mb: 60001  # 60GB+1MB
+    disk_demand_gb: 7
+    user_id: "U_013"
+    start_time: "2025-12-10 07:11:00"
+    duration_seconds: 3600
+
+  - task_id: "T_048"
+    cpu_demand: 1
+    memory_demand_mb: 6999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_014"
+    start_time: "2025-12-10 07:12:00"
+    duration_seconds: 3600
+
+  - task_id: "T_049"
+    cpu_demand: 1
+    memory_demand_mb: 70001  # 70GB+1MB
+    disk_demand_gb: 8
+    user_id: "U_014"
+    start_time: "2025-12-10 07:13:00"
+    duration_seconds: 3600
+
+  - task_id: "T_050"
+    cpu_demand: 1
+    memory_demand_mb: 7999  # 非标准值
+    disk_demand_gb: 1
+    user_id: "U_015"
+    start_time: "2025-12-10 07:14:00"
+    duration_seconds: 3600
