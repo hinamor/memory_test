@@ -407,3 +407,579 @@ tasks:
     user_id: "U_015"
     start_time: "2025-12-10 07:14:00"
     duration_seconds: 3600
+
+  # ========== 新增任务 T_051 ~ T_100 ==========
+  # 用户U_016：混合粒度内存任务，模拟真实业务波动
+  - task_id: "T_051"
+    cpu_demand: 2  # 首次引入多核需求，增加复杂度
+    memory_demand_mb: 8193  # 8GB+1MB
+    disk_demand_gb: 4
+    user_id: "U_016"
+    start_time: "2025-12-10 07:15:00"
+    duration_seconds: 4200  # 70分钟
+
+  - task_id: "T_052"
+    cpu_demand: 2
+    memory_demand_mb: 4095  # 4GB-1MB
+    disk_demand_gb: 3
+    user_id: "U_016"
+    start_time: "2025-12-10 07:16:00"
+    duration_seconds: 4200
+
+  - task_id: "T_053"
+    cpu_demand: 2
+    memory_demand_mb: 12289  # 12GB+1MB
+    disk_demand_gb: 6
+    user_id: "U_016"
+    start_time: "2025-12-10 07:17:00"
+    duration_seconds: 4200
+
+  - task_id: "T_054"
+    cpu_demand: 2
+    memory_demand_mb: 16383  # 16GB-1MB
+    disk_demand_gb: 8
+    user_id: "U_016"
+    start_time: "2025-12-10 07:18:00"
+    duration_seconds: 4200
+
+  - task_id: "T_055"
+    cpu_demand: 2
+    memory_demand_mb: 20481  # 20GB+1MB
+    disk_demand_gb: 10
+    user_id: "U_016"
+    start_time: "2025-12-10 07:19:00"
+    duration_seconds: 4200
+
+  # 用户U_017：毫秒级碎片任务，测试极小内存块管理
+  - task_id: "T_056"
+    cpu_demand: 1
+    memory_demand_mb: 1  # 1MB极小内存
+    disk_demand_gb: 1
+    user_id: "U_017"
+    start_time: "2025-12-10 07:20:00"
+    duration_seconds: 900  # 15分钟
+
+  - task_id: "T_057"
+    cpu_demand: 1
+    memory_demand_mb: 1025  # 1GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_017"
+    start_time: "2025-12-10 07:21:00"
+    duration_seconds: 900
+
+  - task_id: "T_058"
+    cpu_demand: 1
+    memory_demand_mb: 2  # 2MB极小内存
+    disk_demand_gb: 1
+    user_id: "U_017"
+    start_time: "2025-12-10 07:22:00"
+    duration_seconds: 900
+
+  - task_id: "T_059"
+    cpu_demand: 1
+    memory_demand_mb: 2047  # 2GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_017"
+    start_time: "2025-12-10 07:23:00"
+    duration_seconds: 900
+
+  - task_id: "T_060"
+    cpu_demand: 1
+    memory_demand_mb: 4  # 4MB极小内存
+    disk_demand_gb: 1
+    user_id: "U_017"
+    start_time: "2025-12-10 07:24:00"
+    duration_seconds: 900
+
+  # 用户U_018：超长时间任务，测试内存长期占用后的碎片
+  - task_id: "T_061"
+    cpu_demand: 1
+    memory_demand_mb: 8191  # 8GB-1MB
+    disk_demand_gb: 5
+    user_id: "U_018"
+    start_time: "2025-12-10 07:25:00"
+    duration_seconds: 14400  # 4小时
+
+  - task_id: "T_062"
+    cpu_demand: 1
+    memory_demand_mb: 16385  # 16GB+1MB
+    disk_demand_gb: 10
+    user_id: "U_018"
+    start_time: "2025-12-10 07:26:00"
+    duration_seconds: 14400
+
+  - task_id: "T_063"
+    cpu_demand: 1
+    memory_demand_mb: 32767  # 32GB-1MB
+    disk_demand_gb: 15
+    user_id: "U_018"
+    start_time: "2025-12-10 07:27:00"
+    duration_seconds: 14400
+
+  - task_id: "T_064"
+    cpu_demand: 1
+    memory_demand_mb: 65537  # 64GB+1MB
+    disk_demand_gb: 20
+    user_id: "U_018"
+    start_time: "2025-12-10 07:28:00"
+    duration_seconds: 14400
+
+  - task_id: "T_065"
+    cpu_demand: 1
+    memory_demand_mb: 131071  # 128GB-1MB
+    disk_demand_gb: 30
+    user_id: "U_018"
+    start_time: "2025-12-10 07:29:00"
+    duration_seconds: 14400
+
+  # 用户U_019：阶梯式内存增长任务，模拟业务扩容
+  - task_id: "T_066"
+    cpu_demand: 1
+    memory_demand_mb: 513  # 0.5GB+1MB
+    disk_demand_gb: 2
+    user_id: "U_019"
+    start_time: "2025-12-10 07:30:00"
+    duration_seconds: 3600
+
+  - task_id: "T_067"
+    cpu_demand: 1
+    memory_demand_mb: 1537  # 1.5GB+1MB
+    disk_demand_gb: 3
+    user_id: "U_019"
+    start_time: "2025-12-10 07:31:00"
+    duration_seconds: 3600
+
+  - task_id: "T_068"
+    cpu_demand: 1
+    memory_demand_mb: 2561  # 2.5GB+1MB
+    disk_demand_gb: 4
+    user_id: "U_019"
+    start_time: "2025-12-10 07:32:00"
+    duration_seconds: 3600
+
+  - task_id: "T_069"
+    cpu_demand: 1
+    memory_demand_mb: 3585  # 3.5GB+1MB
+    disk_demand_gb: 5
+    user_id: "U_019"
+    start_time: "2025-12-10 07:33:00"
+    duration_seconds: 3600
+
+  - task_id: "T_070"
+    cpu_demand: 1
+    memory_demand_mb: 4609  # 4.5GB+1MB
+    disk_demand_gb: 6
+    user_id: "U_019"
+    start_time: "2025-12-10 07:34:00"
+    duration_seconds: 3600
+
+  # 用户U_020：随机波动内存任务，模拟不稳定业务负载
+  - task_id: "T_071"
+    cpu_demand: 3  # 3核需求，增加CPU-内存联动复杂度
+    memory_demand_mb: 789  # 随机非标准值
+    disk_demand_gb: 2
+    user_id: "U_020"
+    start_time: "2025-12-10 07:35:00"
+    duration_seconds: 2700  # 45分钟
+
+  - task_id: "T_072"
+    cpu_demand: 3
+    memory_demand_mb: 8765  # 随机非标准值
+    disk_demand_gb: 4
+    user_id: "U_020"
+    start_time: "2025-12-10 07:36:00"
+    duration_seconds: 2700
+
+  - task_id: "T_073"
+    cpu_demand: 3
+    memory_demand_mb: 4321  # 随机非标准值
+    disk_demand_gb: 3
+    user_id: "U_020"
+    start_time: "2025-12-10 07:37:00"
+    duration_seconds: 2700
+
+  - task_id: "T_074"
+    cpu_demand: 3
+    memory_demand_mb: 9876  # 随机非标准值
+    disk_demand_gb: 5
+    user_id: "U_020"
+    start_time: "2025-12-10 07:38:00"
+    duration_seconds: 2700
+
+  - task_id: "T_075"
+    cpu_demand: 3
+    memory_demand_mb: 5432  # 随机非标准值
+    disk_demand_gb: 4
+    user_id: "U_020"
+    start_time: "2025-12-10 07:39:00"
+    duration_seconds: 2700
+
+  # 用户U_021：密集短周期任务，测试内存快速分配释放
+  - task_id: "T_076"
+    cpu_demand: 1
+    memory_demand_mb: 1023  # 1GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_021"
+    start_time: "2025-12-10 07:40:00"
+    duration_seconds: 300  # 5分钟
+
+  - task_id: "T_077"
+    cpu_demand: 1
+    memory_demand_mb: 2049  # 2GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_021"
+    start_time: "2025-12-10 07:41:00"
+    duration_seconds: 300
+
+  - task_id: "T_078"
+    cpu_demand: 1
+    memory_demand_mb: 3071  # 3GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_021"
+    start_time: "2025-12-10 07:42:00"
+    duration_seconds: 300
+
+  - task_id: "T_079"
+    cpu_demand: 1
+    memory_demand_mb: 4097  # 4GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_021"
+    start_time: "2025-12-10 07:43:00"
+    duration_seconds: 300
+
+  - task_id: "T_080"
+    cpu_demand: 1
+    memory_demand_mb: 5119  # 5GB-1MB
+    disk_demand_gb: 1
+    user_id: "U_021"
+    start_time: "2025-12-10 07:44:00"
+    duration_seconds: 300
+
+  # 用户U_022：超大内存+极小内存混合任务
+  - task_id: "T_081"
+    cpu_demand: 4  # 4核高需求
+    memory_demand_mb: 81921  # 80GB+1MB
+    disk_demand_gb: 25
+    user_id: "U_022"
+    start_time: "2025-12-10 07:45:00"
+    duration_seconds: 7200
+
+  - task_id: "T_082"
+    cpu_demand: 1
+    memory_demand_mb: 8  # 8MB极小内存
+    disk_demand_gb: 1
+    user_id: "U_022"
+    start_time: "2025-12-10 07:46:00"
+    duration_seconds: 1800
+
+  - task_id: "T_083"
+    cpu_demand: 4
+    memory_demand_mb: 98305  # 96GB+1MB
+    disk_demand_gb: 30
+    user_id: "U_022"
+    start_time: "2025-12-10 07:47:00"
+    duration_seconds: 7200
+
+  - task_id: "T_084"
+    cpu_demand: 1
+    memory_demand_mb: 16  # 16MB极小内存
+    disk_demand_gb: 1
+    user_id: "U_022"
+    start_time: "2025-12-10 07:48:00"
+    duration_seconds: 1800
+
+  - task_id: "T_085"
+    cpu_demand: 4
+    memory_demand_mb: 114689  # 112GB+1MB
+    disk_demand_gb: 35
+    user_id: "U_022"
+    start_time: "2025-12-10 07:49:00"
+    duration_seconds: 7200
+
+  # 用户U_023：奇数GB内存任务，避开2的幂次
+  - task_id: "T_086"
+    cpu_demand: 1
+    memory_demand_mb: 7169  # 7GB+1MB
+    disk_demand_gb: 3
+    user_id: "U_023"
+    start_time: "2025-12-10 07:50:00"
+    duration_seconds: 3600
+
+  - task_id: "T_087"
+    cpu_demand: 1
+    memory_demand_mb: 9215  # 9GB-1MB
+    disk_demand_gb: 4
+    user_id: "U_023"
+    start_time: "2025-12-10 07:51:00"
+    duration_seconds: 3600
+
+  - task_id: "T_088"
+    cpu_demand: 1
+    memory_demand_mb: 11265  # 11GB+1MB
+    disk_demand_gb: 5
+    user_id: "U_023"
+    start_time: "2025-12-10 07:52:00"
+    duration_seconds: 3600
+
+  - task_id: "T_089"
+    cpu_demand: 1
+    memory_demand_mb: 13311  # 13GB-1MB
+    disk_demand_gb: 6
+    user_id: "U_023"
+    start_time: "2025-12-10 07:53:00"
+    duration_seconds: 3600
+
+  - task_id: "T_090"
+    cpu_demand: 1
+    memory_demand_mb: 15361  # 15GB+1MB
+    disk_demand_gb: 7
+    user_id: "U_023"
+    start_time: "2025-12-10 07:54:00"
+    duration_seconds: 3600
+
+  # 用户U_024：非对称时间分布任务
+  - task_id: "T_091"
+    cpu_demand: 2
+    memory_demand_mb: 6789  # 随机非标准值
+    disk_demand_gb: 4
+    user_id: "U_024"
+    start_time: "2025-12-10 07:55:00"
+    duration_seconds: 1200  # 20分钟
+
+  - task_id: "T_092"
+    cpu_demand: 2
+    memory_demand_mb: 8765  # 随机非标准值
+    disk_demand_gb: 5
+    user_id: "U_024"
+    start_time: "2025-12-10 07:57:00"
+    duration_seconds: 4800  # 80分钟
+
+  - task_id: "T_093"
+    cpu_demand: 2
+    memory_demand_mb: 5432  # 随机非标准值
+    disk_demand_gb: 3
+    user_id: "U_024"
+    start_time: "2025-12-10 08:00:00"
+    duration_seconds: 1800  # 30分钟
+
+  - task_id: "T_094"
+    cpu_demand: 2
+    memory_demand_mb: 9876  # 随机非标准值
+    disk_demand_gb: 6
+    user_id: "U_024"
+    start_time: "2025-12-10 08:05:00"
+    duration_seconds: 5400  # 90分钟
+
+  - task_id: "T_095"
+    cpu_demand: 2
+    memory_demand_mb: 3210  # 随机非标准值
+    disk_demand_gb: 2
+    user_id: "U_024"
+    start_time: "2025-12-10 08:10:00"
+    duration_seconds: 2400  # 40分钟
+
+  # 用户U_025：临界值内存任务（接近内存分配阈值）
+  - task_id: "T_096"
+    cpu_demand: 1
+    memory_demand_mb: 4095  # 4GB-1MB（临界值）
+    disk_demand_gb: 2
+    user_id: "U_025"
+    start_time: "2025-12-10 08:15:00"
+    duration_seconds: 3600
+
+  - task_id: "T_097"
+    cpu_demand: 1
+    memory_demand_mb: 8193  # 8GB+1MB（临界值）
+    disk_demand_gb: 4
+    user_id: "U_025"
+    start_time: "2025-12-10 08:16:00"
+    duration_seconds: 3600
+
+  - task_id: "T_098"
+    cpu_demand: 1
+    memory_demand_mb: 16383  # 16GB-1MB（临界值）
+    disk_demand_gb: 8
+    user_id: "U_025"
+    start_time: "2025-12-10 08:17:00"
+    duration_seconds: 3600
+
+  - task_id: "T_099"
+    cpu_demand: 1
+    memory_demand_mb: 32769  # 32GB+1MB（临界值）
+    disk_demand_gb: 16
+    user_id: "U_025"
+    start_time: "2025-12-10 08:18:00"
+    duration_seconds: 3600
+
+  - task_id: "T_100"
+    cpu_demand: 1
+    memory_demand_mb: 65535  # 64GB-1MB（临界值）
+    disk_demand_gb: 32
+    user_id: "U_025"
+    start_time: "2025-12-10 08:19:00"
+    duration_seconds: 3600
+
+  # ========== 新增任务 T_101 ~ T_150 ==========
+  # 用户U_026：混合IO-内存压力任务
+  - task_id: "T_101"
+    cpu_demand: 2
+    memory_demand_mb: 4567  # 随机非标准值
+    disk_demand_gb: 15  # 高磁盘IO
+    user_id: "U_026"
+    start_time: "2025-12-10 08:20:00"
+    duration_seconds: 3600
+
+  - task_id: "T_102"
+    cpu_demand: 2
+    memory_demand_mb: 8765  # 随机非标准值
+    disk_demand_gb: 20  # 高磁盘IO
+    user_id: "U_026"
+    start_time: "2025-12-10 08:21:00"
+    duration_seconds: 3600
+
+  - task_id: "T_103"
+    cpu_demand: 2
+    memory_demand_mb: 2345  # 随机非标准值
+    disk_demand_gb: 10  # 高磁盘IO
+    user_id: "U_026"
+    start_time: "2025-12-10 08:22:00"
+    duration_seconds: 3600
+
+  - task_id: "T_104"
+    cpu_demand: 2
+    memory_demand_mb: 7654  # 随机非标准值
+    disk_demand_gb: 18  # 高磁盘IO
+    user_id: "U_026"
+    start_time: "2025-12-10 08:23:00"
+    duration_seconds: 3600
+
+  - task_id: "T_105"
+    cpu_demand: 2
+    memory_demand_mb: 1234  # 随机非标准值
+    disk_demand_gb: 8  # 高磁盘IO
+    user_id: "U_026"
+    start_time: "2025-12-10 08:24:00"
+    duration_seconds: 3600
+
+  # 用户U_027：微秒级高频任务（极短生命周期）
+  - task_id: "T_106"
+    cpu_demand: 1
+    memory_demand_mb: 513  # 0.5GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_027"
+    start_time: "2025-12-10 08:25:00"
+    duration_seconds: 60  # 1分钟
+
+  - task_id: "T_107"
+    cpu_demand: 1
+    memory_demand_mb: 1025  # 1GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_027"
+    start_time: "2025-12-10 08:26:00"
+    duration_seconds: 60
+
+  - task_id: "T_108"
+    cpu_demand: 1
+    memory_demand_mb: 1537  # 1.5GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_027"
+    start_time: "2025-12-10 08:27:00"
+    duration_seconds: 60
+
+  - task_id: "T_109"
+    cpu_demand: 1
+    memory_demand_mb: 2049  # 2GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_027"
+    start_time: "2025-12-10 08:28:00"
+    duration_seconds: 60
+
+  - task_id: "T_110"
+    cpu_demand: 1
+    memory_demand_mb: 2561  # 2.5GB+1MB
+    disk_demand_gb: 1
+    user_id: "U_027"
+    start_time: "2025-12-10 08:29:00"
+    duration_seconds: 60
+
+  # 用户U_028：内存碎片叠加任务（连续非标准值）
+  - task_id: "T_111"
+    cpu_demand: 3
+    memory_demand_mb: 1001  # 非标准值
+    disk_demand_gb: 3
+    user_id: "U_028"
+    start_time: "2025-12-10 08:30:00"
+    duration_seconds: 4200
+
+  - task_id: "T_112"
+    cpu_demand: 3
+    memory_demand_mb: 2001  # 非标准值
+    disk_demand_gb: 4
+    user_id: "U_028"
+    start_time: "2025-12-10 08:31:00"
+    duration_seconds: 4200
+
+  - task_id: "T_113"
+    cpu_demand: 3
+    memory_demand_mb: 3001  # 非标准值
+    disk_demand_gb: 5
+    user_id: "U_028"
+    start_time: "2025-12-10 08:32:00"
+    duration_seconds: 4200
+
+  - task_id: "T_114"
+    cpu_demand: 3
+    memory_demand_mb: 4001  # 非标准值
+    disk_demand_gb: 6
+    user_id: "U_028"
+    start_time: "2025-12-10 08:33:00"
+    duration_seconds: 4200
+
+  - task_id: "T_115"
+    cpu_demand: 3
+    memory_demand_mb: 5001  # 非标准值
+    disk_demand_gb: 7
+    user_id: "U_028"
+    start_time: "2025-12-10 08:34:00"
+    duration_seconds: 4200
+
+  # 用户U_029：跨天任务（测试午夜内存碎片）
+  - task_id: "T_116"
+    cpu_demand: 1
+    memory_demand_mb: 49153  # 48GB+1MB
+    disk_demand_gb: 20
+    user_id: "U_029"
+    start_time: "2025-12-10 23:00:00"
+    duration_seconds: 10800  # 3小时（跨午夜）
+
+  - task_id: "T_117"
+    cpu_demand: 1
+    memory_demand_mb: 57343  # 56GB-1MB
+    disk_demand_gb: 25
+    user_id: "U_029"
+    start_time: "2025-12-10 23:15:00"
+    duration_seconds: 10800
+
+  - task_id: "T_118"
+    cpu_demand: 1
+    memory_demand_mb: 65537  # 64GB+1MB
+    disk_demand_gb: 30
+    user_id: "U_029"
+    start_time: "2025-12-10 23:30:00"
+    duration_seconds: 10800
+
+  - task_id: "T_119"
+    cpu_demand: 1
+    memory_demand_mb: 73727  # 72GB-1MB
+    disk_demand_gb: 35
+    user_id: "U_029"
+    start_time: "2025-12-10 23:45:00"
+    duration_seconds: 10800
+
+  - task_id: "T_120"
+    cpu_demand: 1
+    memory_demand_mb: 81921  # 80GB+1MB
+    disk_demand_gb: 40
+    user_id: "U_029"
+    start_time: "2025-12-11 00:00:00"
+    duration_seconds: 10800

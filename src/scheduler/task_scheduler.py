@@ -440,6 +440,8 @@ class TaskScheduler:
             f"各节点CPU碎片率列表：{cpu_rates}"
         )
         print(stats)
+        average = sum(cpu_rates) / len(cpu_rates)
+        print(f"平均碎片率：{average}")
         self.write_log_to_file(stats, add_timestamp=False)
 
         if mem_rates:
