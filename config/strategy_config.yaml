@@ -1,6 +1,7 @@
 # 策略配置（新增资源规格参数）
 target_weights:
-  memory_fragment_min: 1
+  memory_fragment_min: 0
+  cpu_fragment_min: 1
   user_task_distribute: 0
   machine_recent_limit: 0
 
@@ -13,4 +14,5 @@ machine_recent_config:
 
 # 新增：碎片率计算用的资源规格
 fragment_calculation:
-  target_memory_mb: 8196  # 目标内存规格（8GB）- 用于计算可分配资源量
+  target_memory_mb: 32784  # 目标内存规格（8GB）- 用于计算可分配资源量
+  target_cpu_cores: 16

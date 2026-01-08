@@ -91,7 +91,7 @@ class Machine:
         self.recent_tasks = [(tid, st) for tid, st in self.recent_tasks if tid != task_id]
 
         log_content = f"任务{task_id}（用户{user_id}）释放成功！释放内存：{task_memory/1024:.1f}GB"
-        print(log_content)
+        # print(log_content)
         return True, log_content
 
     def get_cpu_usage_rate(self) -> float:
@@ -107,6 +107,13 @@ class Machine:
         else:
             unusable = self.free_memory % target_memory_mb
         return round((unusable / self.total_memory) * 100, 2)
+    
+    def calculate_cpu_fragmentation_rate(self, target_cpu_cores: int) -> float:
+        if target_cpu_cores <= 0 or self.total_cpu <= 0:
+            return 0.0
+        remainder = self.free_cpu % target_cpu_cores
+        frag_rate = (remainder / self.total_cpu) * 100
+        return round(frag_rate, 2)
 
     def get_user_task_count(self, user_id: str) -> int:
         return self.user_task_count.get(user_id, 0)
@@ -117,12 +124,12 @@ class Machine:
 
     def __str__(self) -> str:
         status = "启用" if self.is_enabled else "禁用"
-        cpu_usage = self.get_cpu_usage_rate()
+        cpu_rate = self.calculate_cpu_fragmentation_rate(16)
         frag_rate = self.calculate_memory_fragmentation_rate(8192)  # 默认值，实际由调度器传入
         user_count = len(self.user_task_count)
         recent_count = len(self.recent_tasks)
         return (
-            f"状态：{status} | CPU(总{self.total_cpu}/剩{self.free_cpu}/使用率{cpu_usage}%) | "
+            f"状态：{status} | CPU(总{self.total_cpu}/剩{self.free_cpu}/碎片率{cpu_rate}%) | "
             f"内存(总{self.total_memory/1024:.1f}GB/剩{self.free_memory/1024:.1f}GB/碎片率{frag_rate}%) | "
             f"外存(总{self.total_disk}/剩{self.free_disk}) | 任务数{len(self.tasks)} | "
             f"承载用户数{user_count} | 近期任务数{recent_count}"
