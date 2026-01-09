@@ -5,13 +5,18 @@ import random
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from ..models.machine import Machine
+# 新增：导入Excel处理库
+import openpyxl
+from openpyxl import Workbook
 
 class TaskScheduler:
     def __init__(self,
                  machine_config_name: str = "machine_config.yaml",
                  task_config_name: str = "task_config.yaml",
                  strategy_config_name: str = "strategy_config.yaml",
-                 log_filename: Optional[str] = None):
+                 log_filename: Optional[str] = None,
+                 # 优化：移除固定Excel文件名参数，改为动态生成
+                 excel_dir: str = "./fragmentation_reports"):
         self.machine_config_path = machine_config_name
         self.task_config_path = task_config_name
         self.strategy_config_path = strategy_config_name
@@ -22,6 +27,16 @@ class TaskScheduler:
             self.log_filename = log_filename
         self._ensure_log_dir_exists()
 
+        # 优化：动态生成带时间戳的Excel文件名
+        self.excel_dir = excel_dir
+        self._ensure_excel_dir_exists()
+        # 生成带时间戳的Excel文件名，格式：fragmentation_20251210_143025.xlsx
+        self.excel_filename = os.path.join(
+            self.excel_dir,
+            f"fragmentation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        )
+        self._init_excel_file()  # 仅创建一次，不会重复创建
+
         self.machine_config = self.load_yaml(self.machine_config_path)
         self.task_config = self.load_yaml(self.task_config_path)
         self.strategy_config = self.load_yaml(self.strategy_config_path)
@@ -29,11 +44,60 @@ class TaskScheduler:
         self._init_strategy_params()
         self.machines: List[Machine] = self.init_machines()
         self.task_cache: Dict[str, Dict] = {}
+        # 新增：记录调度轮次
+        self.schedule_round = 0
 
     def _ensure_log_dir_exists(self):
         log_dir = os.path.dirname(self.log_filename)
         if log_dir and not os.path.exists(log_dir):
             os.makedirs(log_dir, exist_ok=True)
+
+    # 优化：新增Excel目录创建方法
+    def _ensure_excel_dir_exists(self):
+        if not os.path.exists(self.excel_dir):
+            os.makedirs(self.excel_dir, exist_ok=True)
+
+    # 优化：Excel初始化逻辑（仅创建一次，不会覆盖）
+    def _init_excel_file(self):
+        # 只有文件不存在时才创建，避免覆盖已有文件
+        if not os.path.exists(self.excel_filename):
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "碎片率统计"
+            # 设置表头
+            ws['A1'] = "调度轮次"
+            ws['B1'] = "时间戳"
+            ws['C1'] = "平均内存碎片率(%)"
+            ws['D1'] = "平均CPU碎片率(%)"
+            ws['E1'] = "已分配任务数"
+            wb.save(self.excel_filename)
+            wb.close()
+            print(f"Excel统计文件已创建：{self.excel_filename}")
+        else:
+            print(f"使用已存在的Excel统计文件：{self.excel_filename}")
+
+    # 优化：保持原有写入逻辑，但文件不会被覆盖
+    def write_fragmentation_to_excel(self, mem_avg, cpu_avg, task_count):
+        self.schedule_round += 1
+        # 容错处理：防止文件被外部程序占用
+        try:
+            wb = openpyxl.load_workbook(self.excel_filename)
+            ws = wb.active
+            # 找到下一个空行
+            next_row = ws.max_row + 1
+            # 写入数据
+            ws[f'A{next_row}'] = self.schedule_round
+            ws[f'B{next_row}'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            ws[f'C{next_row}'] = mem_avg
+            ws[f'D{next_row}'] = cpu_avg
+            ws[f'E{next_row}'] = task_count
+            # 保存文件
+            wb.save(self.excel_filename)
+            wb.close()
+        except Exception as e:
+            error_msg = f"写入Excel文件失败：{e}"
+            print(error_msg)
+            self.write_log_to_file(error_msg)
 
     def write_log_to_file(self, content: str, add_timestamp: bool = True):
         try:
@@ -255,12 +319,32 @@ class TaskScheduler:
             )
             # print(success_msg)
             # self.write_log_to_file(success_msg, add_timestamp=False)
+            
+            # 新增：每提交一个任务后计算并输出平均碎片率
+            self._log_and_save_fragmentation_stats(f"任务{task_id}分配后")
             return True
         else:
             error_msg = f"任务{task_id}（用户{user_id}）分配异常，失败"
             print(error_msg)
             self.write_log_to_file(error_msg)
             return False
+
+    # 新增：核心方法 - 计算、输出、保存碎片率
+    def _log_and_save_fragmentation_stats(self, stage: str):
+        mem_avg, _ = self.calculate_global_memory_fragmentation_rate()
+        cpu_avg, _ = self.calculate_global_cpu_fragmentation_rate()
+        task_count = len(self.task_cache)
+        
+        # 输出平均碎片率
+        frag_msg = f"\n【{stage}】平均碎片率统计："
+        frag_msg += f"\n  平均内存碎片率：{mem_avg}%"
+        frag_msg += f"\n  平均CPU碎片率：{cpu_avg}%"
+        frag_msg += f"\n  当前已分配任务数：{task_count}"
+        print(frag_msg)
+        self.write_log_to_file(frag_msg)
+        
+        # 写入Excel
+        self.write_fragmentation_to_excel(mem_avg, cpu_avg, task_count)
 
     def submit_all_tasks(self):
         tasks = self.task_config.get('tasks', [])
@@ -285,6 +369,9 @@ class TaskScheduler:
             # print("-"*40)
             # self.write_log_to_file("-"*40, add_timestamp=False)
 
+        # 新增：所有任务提交完成后输出并保存碎片率
+        self._log_and_save_fragmentation_stats("所有任务提交完成")
+        
         finish = "所有任务提交完成！"
         print("="*60)
         print(finish)
@@ -306,6 +393,9 @@ class TaskScheduler:
         if success:
             del self.task_cache[task_id]
             # self.write_log_to_file(log_content)
+            
+            # 新增：释放任务后计算并输出平均碎片率
+            self._log_and_save_fragmentation_stats(f"任务{task_id}释放后")
             return True
         else:
             # self.write_log_to_file(log_content)
@@ -338,6 +428,9 @@ class TaskScheduler:
             # print("-"*40)
             self.write_log_to_file("-"*40, add_timestamp=False)
 
+        # 新增：随机释放完成后输出并保存碎片率
+        self._log_and_save_fragmentation_stats("随机任务释放完成")
+        
         finish = f"随机释放完成！成功释放{success}个任务，剩余任务{len(self.task_cache)}个"
         print(finish)
         print("="*60 + "\n")

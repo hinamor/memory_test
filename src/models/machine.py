@@ -124,7 +124,7 @@ class Machine:
 
     def __str__(self) -> str:
         status = "启用" if self.is_enabled else "禁用"
-        cpu_rate = self.calculate_cpu_fragmentation_rate(16)
+        cpu_rate = self.calculate_cpu_fragmentation_rate(64)
         frag_rate = self.calculate_memory_fragmentation_rate(8192)  # 默认值，实际由调度器传入
         user_count = len(self.user_task_count)
         recent_count = len(self.recent_tasks)
