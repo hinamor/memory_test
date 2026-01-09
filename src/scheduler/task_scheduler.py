@@ -16,7 +16,11 @@ class TaskScheduler:
                  strategy_config_name: str = "strategy_config.yaml",
                  log_filename: Optional[str] = None,
                  # 优化：移除固定Excel文件名参数，改为动态生成
-                 excel_dir: str = "./fragmentation_reports"):
+                 excel_dir: str = "./fragmentation_reports",
+                # 新增：提交任务时的释放概率（0-1之间）
+                release_probability: float = 0.2,
+                # 新增：每次释放的任务数（固定1个，简化逻辑）
+                release_count_per_trigger: int = 1):
         self.machine_config_path = machine_config_name
         self.task_config_path = task_config_name
         self.strategy_config_path = strategy_config_name
@@ -46,6 +50,10 @@ class TaskScheduler:
         self.task_cache: Dict[str, Dict] = {}
         # 新增：记录调度轮次
         self.schedule_round = 0
+
+        # 新增：初始化释放控制参数
+        self.release_probability = release_probability
+        self.release_count_per_trigger = release_count_per_trigger
 
     def _ensure_log_dir_exists(self):
         log_dir = os.path.dirname(self.log_filename)
@@ -131,13 +139,67 @@ class TaskScheduler:
             self.write_log_to_file(error_msg)
             raise
 
+    # def _init_strategy_params(self):
+    #     target_weights = self.strategy_config.get('target_weights', {})
+    #     self.memory_frag_weight = target_weights.get('memory_fragment_min', 0.4)
+    #     self.cpu_frag_weight = target_weights.get('cpu_fragment_min', 0.3)
+    #     self.user_distribute_weight = target_weights.get('user_task_distribute', 0.2)
+    #     self.machine_recent_weight = target_weights.get('machine_recent_limit', 0.1)
+
+    #     user_dist_config = self.strategy_config.get('user_distribute_config', {})
+    #     self.max_user_task_per_machine = user_dist_config.get('max_task_per_user_per_machine', 2)
+
+    #     machine_recent_config = self.strategy_config.get('machine_recent_config', {})
+    #     self.recent_time_window = machine_recent_config.get('recent_time_window_seconds', 3600)
+    #     self.max_recent_tasks_per_machine = machine_recent_config.get('max_recent_tasks_per_machine', 5)
+
+    #     frag_config = self.strategy_config.get('fragment_calculation', {})
+    #     self.target_memory_mb = frag_config.get('target_memory_mb', 8192)
+    #     self.target_cpu_cores = frag_config.get('target_cpu_cores', 4)
+
+    #     total_weight = (
+    #         self.memory_frag_weight +
+    #         self.cpu_frag_weight +
+    #         self.user_distribute_weight +
+    #         self.machine_recent_weight
+    #     )
+    #     if total_weight != 0:
+    #         self.memory_frag_weight /= total_weight
+    #         self.cpu_frag_weight /= total_weight
+    #         self.user_distribute_weight /= total_weight
+    #         self.machine_recent_weight /= total_weight
+
+    #     # === 精简日志：只保留碎片率相关配置 ===
+    #     weight_log = (
+    #         f"碎片优化策略初始化完成（归一化后）：\n"
+    #         f"  内存碎片最小化权重：{self.memory_frag_weight:.2f}\n"
+    #         f"  CPU碎片最小化权重：{self.cpu_frag_weight:.2f}\n"
+    #         f"  碎片计算基准：内存 {self.target_memory_mb}MB | CPU {self.target_cpu_cores}核"
+    #     )
+    #     self.write_log_to_file(weight_log, add_timestamp=False)
+
     def _init_strategy_params(self):
         target_weights = self.strategy_config.get('target_weights', {})
         self.memory_frag_weight = target_weights.get('memory_fragment_min', 0.4)
         self.cpu_frag_weight = target_weights.get('cpu_fragment_min', 0.3)
         self.user_distribute_weight = target_weights.get('user_task_distribute', 0.2)
         self.machine_recent_weight = target_weights.get('machine_recent_limit', 0.1)
+        # 新增：加载空闲资源权重
+        self.idle_resource_weight = target_weights.get('idle_resource', 0.2)
 
+        # 新增：加载空闲资源细分权重（CPU/内存/磁盘）
+        idle_res_weights = self.strategy_config.get('idle_resource_weights', {})
+        self.idle_cpu_weight = idle_res_weights.get('cpu', 0.4)
+        self.idle_mem_weight = idle_res_weights.get('memory', 0.4)
+        self.idle_disk_weight = idle_res_weights.get('disk', 0.2)
+        # 细分权重归一化（避免总和不为1）
+        idle_total = self.idle_cpu_weight + self.idle_mem_weight + self.idle_disk_weight
+        if idle_total != 0:
+            self.idle_cpu_weight /= idle_total
+            self.idle_mem_weight /= idle_total
+            self.idle_disk_weight /= idle_total
+
+        # 原有配置加载逻辑（不变）
         user_dist_config = self.strategy_config.get('user_distribute_config', {})
         self.max_user_task_per_machine = user_dist_config.get('max_task_per_user_per_machine', 2)
 
@@ -149,23 +211,27 @@ class TaskScheduler:
         self.target_memory_mb = frag_config.get('target_memory_mb', 8192)
         self.target_cpu_cores = frag_config.get('target_cpu_cores', 4)
 
+        # 修改：归一化时包含新增的空闲资源权重
         total_weight = (
             self.memory_frag_weight +
             self.cpu_frag_weight +
             self.user_distribute_weight +
-            self.machine_recent_weight
+            self.machine_recent_weight +
+            self.idle_resource_weight  # 新增
         )
         if total_weight != 0:
             self.memory_frag_weight /= total_weight
             self.cpu_frag_weight /= total_weight
             self.user_distribute_weight /= total_weight
             self.machine_recent_weight /= total_weight
+            self.idle_resource_weight /= total_weight  # 新增
 
-        # === 精简日志：只保留碎片率相关配置 ===
+        # 精简日志：补充空闲资源权重
         weight_log = (
             f"碎片优化策略初始化完成（归一化后）：\n"
             f"  内存碎片最小化权重：{self.memory_frag_weight:.2f}\n"
             f"  CPU碎片最小化权重：{self.cpu_frag_weight:.2f}\n"
+            f"  空闲资源权重：{self.idle_resource_weight:.2f}\n"  # 新增
             f"  碎片计算基准：内存 {self.target_memory_mb}MB | CPU {self.target_cpu_cores}核"
         )
         self.write_log_to_file(weight_log, add_timestamp=False)
@@ -225,11 +291,28 @@ class TaskScheduler:
         else:
             machine_recent_score = (self.max_recent_tasks_per_machine - recent_count) / self.max_recent_tasks_per_machine
 
+        # ========== 新增：空闲资源得分计算 ==========
+        # 1. 计算各资源空闲率（空闲量/总量，归一化到0-1）
+        cpu_idle_rate = machine.free_cpu / machine.total_cpu if machine.total_cpu > 0 else 0.0
+        mem_idle_rate = machine.free_memory / machine.total_memory if machine.total_memory > 0 else 0.0
+        disk_idle_rate = machine.free_disk / machine.total_disk if machine.total_disk > 0 else 0.0
+
+        # 2. 加权平均得到空闲资源总分（空闲率越高，得分越高）
+        idle_resource_score = (
+            cpu_idle_rate * self.idle_cpu_weight +
+            mem_idle_rate * self.idle_mem_weight +
+            disk_idle_rate * self.idle_disk_weight
+        )
+        # 确保得分在0-1之间（容错）
+        idle_resource_score = max(0.0, min(1.0, idle_resource_score))
+        # ========== 新增结束 ==========
+
         total_score = (
             mem_frag_score * self.memory_frag_weight +
             cpu_frag_score * self.cpu_frag_weight +
             user_dist_score * self.user_distribute_weight +
-            machine_recent_score * self.machine_recent_weight
+            machine_recent_score * self.machine_recent_weight  +
+            idle_resource_score * self.idle_resource_weight  # 新增
         )
         return round(total_score, 4)
 
@@ -322,6 +405,25 @@ class TaskScheduler:
             
             # 新增：每提交一个任务后计算并输出平均碎片率
             self._log_and_save_fragmentation_stats(f"任务{task_id}分配后")
+            
+        # ========== 新增：提交成功后随机释放已有任务 ==========
+        # 只有当已有任务数>0时，才触发释放逻辑
+        if self.task_cache and random.random() < self.release_probability:
+            # 随机选择少量任务释放（默认1个）
+            task_ids = list(self.task_cache.keys())
+            # 排除刚提交的任务（避免刚提交就释放）
+            if task_id in task_ids:
+                task_ids.remove(task_id)
+            if task_ids:
+                # 随机选1个任务释放
+                to_release = random.sample(task_ids, min(self.release_count_per_trigger, len(task_ids)))
+                for tid in to_release:
+                    self.release_single_task(tid)
+                    release_log = f"提交任务{task_id}后随机释放任务{tid}（触发概率：{self.release_probability}）"
+                    print(release_log)
+                    self.write_log_to_file(release_log)
+        # ========== 新增结束 ==========
+
             return True
         else:
             error_msg = f"任务{task_id}（用户{user_id}）分配异常，失败"
@@ -491,6 +593,33 @@ class TaskScheduler:
         # print("="*80 + "\n")
         # self.write_log_to_file("="*80, add_timestamp=False)
         # self.write_log_to_file("")
+
+    # def show_strategy_params(self):
+    #     title = "当前调度策略配置参数（仅碎片部分）"
+    #     print("\n" + "="*80)
+    #     print(title)
+    #     print("="*80)
+    #     self.write_log_to_file("")
+    #     self.write_log_to_file("="*80, add_timestamp=False)
+    #     self.write_log_to_file(title, add_timestamp=False)
+    #     self.write_log_to_file("="*80, add_timestamp=False)
+
+    #     msg = (
+    #         f"碎片优化权重（归一化后）：\n"
+    #         f"  内存碎片最小化权重：{self.memory_frag_weight:.2f}\n"
+    #         f"  CPU碎片最小化权重：{self.cpu_frag_weight:.2f}\n"
+    #         f"  空闲资源权重：{self.idle_resource_weight:.2f}\n"  # 新增
+    #         f"  空闲资源细分权重：CPU {self.idle_cpu_weight:.2f} | 内存 {self.idle_mem_weight:.2f} | 磁盘 {self.idle_disk_weight:.2f}\n"  # 新增
+    #         f"\n碎片计算基准：\n"
+    #         f"  目标内存规格：{self.target_memory_mb}MB（{self.target_memory_mb/1024:.1f}GB）\n"
+    #         f"  目标CPU规格：{self.target_cpu_cores}核"
+    #     )
+    #     print(msg)  # 建议取消注释，方便查看
+    #     self.write_log_to_file(msg, add_timestamp=False)
+
+    #     print("="*80 + "\n")
+    #     self.write_log_to_file("="*80, add_timestamp=False)
+    #     self.write_log_to_file("")
 
     def calculate_global_memory_fragmentation_rate(self):
         enabled = [m for m in self.machines if m.is_enabled]

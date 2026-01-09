@@ -27,12 +27,12 @@ def main():
         scheduler.show_all_machines_status()
         scheduler.print_fragmentation_stats(percentiles=[50, 90])
 
-        scheduler.release_random_tasks(release_ratio=0.3)
+        # scheduler.release_random_tasks(release_ratio=0.3)
 
-        print("\n【释放任务后，产生碎片的机器状态】")
-        scheduler.write_log_to_file("\n【释放任务后，产生碎片的机器状态】")
-        scheduler.show_all_machines_status()
-        scheduler.print_fragmentation_stats(percentiles=[50, 90])
+        # print("\n【释放任务后，产生碎片的机器状态】")
+        # scheduler.write_log_to_file("\n【释放任务后，产生碎片的机器状态】")
+        # scheduler.show_all_machines_status()
+        # scheduler.print_fragmentation_stats(percentiles=[50, 90])
 
         scheduler.show_task_status()
         scheduler.verify_user_distribute_effect()

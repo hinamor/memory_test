@@ -1,5 +1,5 @@
 # 机器配置（最大化任务集中与碎片生成）
-machine_count: 6            # 从5→3台，大幅减少节点数量，强制任务高度集中
+machine_count: 16            # 从5→3台，大幅减少节点数量，强制任务高度集中
 cpu_per_machine: 128        # 提高单节点CPU至120核，避免CPU成为集中分配瓶颈
 memory_per_machine: 256000  # 保持548GB大内存，为碎片分割提供充足空间
 disk_per_machine: 232       # 外存保持充足，不限制任务分配

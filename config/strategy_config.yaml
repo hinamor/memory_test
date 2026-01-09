@@ -1,9 +1,10 @@
 # 策略配置（新增资源规格参数）
 target_weights:
   memory_fragment_min: 0
-  cpu_fragment_min: 0.75
+  cpu_fragment_min: 0
   user_task_distribute: 0
-  machine_recent_limit: 0.25
+  machine_recent_limit: 0
+  free_resource: 1         # 新增：空闲资源权重（空闲越多得分越高）
 
 user_distribute_config:
   max_task_per_user_per_machine: 10
